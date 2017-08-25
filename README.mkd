@@ -1,3 +1,6 @@
 because why not...
 
-also, no use of the internet to lookup anything (including code docs)
+also:
+* no use of the internet to lookup anything (including code docs)
+* no libraries (on a plane, with no internet access)
+

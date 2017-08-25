@@ -1,0 +1,6 @@
+.*.swp
+.*.py.swp
+*.swp
+*.pyc
+.board.py.swp
+
