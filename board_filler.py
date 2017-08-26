@@ -2,6 +2,7 @@ from random import shuffle
 from itertools import permutations
 
 i_try = 0
+best_none_count = 9999
 
 def fill(board):
     """
@@ -26,7 +27,6 @@ def _fill_one_coord(board, coordinates):
         return True
     choices = list(xrange(1, board.dimension))
     for coord in coordinates:
-        choices_so_far = set()
         shuffle(choices)
         to_try = set(coordinates)
         to_try.remove(coord)
@@ -44,8 +44,14 @@ def _fill_one_coord(board, coordinates):
             board.set(coord, None)
             if i_try % 10000 == 0:
                 print board
-                print "num Nones: " + str(len(filter(lambda el: (el),
-                    board.map(lambda el: (el)))))
+                global best_none_count 
+                none_count = len(filter(lambda el: (el), board.map(lambda el: (el))))
+                best_none_count = min(
+                        none_count,
+                        best_none_count 
+                )
+                print "None count: " + str(none_count)
+                print "Best none count: " + str(best_none_count)
     return False
 
 def valid_inner_state(board, inner_square, numbers):
