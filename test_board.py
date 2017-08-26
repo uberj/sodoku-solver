@@ -2,7 +2,7 @@ import unittest
 from coordinate import Coordinate
 import pdb
 from board import Board
-from board_filler import valid_inner_state, fill
+from board_filler import valid_inner_state, fill, BoardFiller
 
 class BoardTest(unittest.TestCase):
     def test_inner_squares_size(self):
@@ -115,6 +115,7 @@ class BoardTest(unittest.TestCase):
     def test_fill(self):
         board = Board(3, 9)
         fill(board)
+        BoardFiller().fill(board)
         print board
 
 if __name__ == '__main__':
