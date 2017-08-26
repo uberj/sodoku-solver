@@ -24,21 +24,21 @@ def valid_state(board, inner_square, numbers):
     """
     start_row, start_col, dim = inner_square
     for i, row_idx in enumerate(xrange(start_row, start_row + dim)):
-        existing_row_set = row_set(board, row_idx)
+        existing_row_set = board.row_set(row_idx)
         proposed_row_set = set()
-        for i in xrange(i, len(numbers), dim):
-            proposed_row_set.append(numbers[i])
+        for i in xrange(i * dim, (i + 1) * dim):
+            proposed_row_set.add(numbers[i])
 
-        if len(existing_row_set - proposed_row_set) != 0:
+        if len(existing_row_set.intersection(proposed_row_set)) != 0:
             return False
 
     for i, col_idx in enumerate(xrange(start_col, start_col + dim)):
-        existing_col_set = col_set(board, col_idx)
+        existing_col_set = board.col_set(col_idx)
         proposed_col_set = set()
         for i in xrange(i, len(numbers), dim):
-            proposed_col_set.append(numbers[i])
+            proposed_col_set.add(numbers[i])
 
-        if len(existing_col_set - proposed_col_set) != 0:
+        if len(existing_col_set.intersection(proposed_col_set)) != 0:
             return False
 
     return True
