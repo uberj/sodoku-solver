@@ -1,54 +1,76 @@
 from random import shuffle
+import sys
 from itertools import permutations
+import time
+import md5
 
 
 class BoardFiller(object):
     i_try = 0
     best_none_count = 9999
-    def fill(self, board):
+    seen_hashes = set()
+
+    def __init__(self, board):
+        self.board = board
+
+    def fill(self):
         """
         Pick inner square
             * calculate possible inner square permutations
             * iterate through perms and check for row col validitity
                 * if valid choice is found, recurse into next inner square
         """
-        coordinates = board.all_square_coordinates()
+        coordinates = self.board.all_square_coordinates()
         shuffle(coordinates)
-        _fill_one_coord(board, coordinates)
+        self._fill_coords(coordinates)
 
-    def _fill_one_coord(self, board, coordinates):
+    def _fill_coords(self, coordinates):
         # get coordinates
         if not coordinates:
             return True
-        choices = list(xrange(1, board.dimension))
+        choices = list(xrange(1, self.board.dimension))
+        shuffle(choices)
         for coord in coordinates:
-            shuffle(choices)
             to_try = set(coordinates)
             to_try.remove(coord)
             for choice in choices:
-                i_try = i_try + 1
-                board.set(coord, choice)
-                if board.is_valid():
-                    success = _fill_one_coord(self, board, to_try)
+                self.i_try = self.i_try + 1
+                self.board.set(coord, choice)
+                print "coord: " + str(coord)
+                print "choice: " + str(choice)
+                if self.board.is_valid() and not self.already_tried(coord, choice):
+                    success = self._fill_coords(to_try)
                     if success:
                         return True
 
                 # something didn't work out, undo the move and try the next coordinate
                 # undo move
-                board.set(coord, None)
-                if i_try % 10000 == 0:
-                    print board
-                    global best_none_count 
-                    none_count = len(filter(lambda el: (el), board.map(lambda el: (el))))
-                    best_none_count = min(
-                            none_count,
-                            best_none_count 
-                    )
-                    print "None count: " + str(none_count)
-                    print "Best none count: " + str(best_none_count)
+                self.board.set(coord, None)
+                self.print_stats()
         return False
 
-    def valid_inner_state(self, board, inner_square, numbers):
+    def already_tried(self, coord, choice):
+        board_hash = md5.md5(" ".join(self.board.map(lambda el: str(el)))).hexdigest()
+        #board_hash = " ".join(self.board.map(lambda el: str(el)))
+        if board_hash in self.seen_hashes:
+            print "dupe!"
+            return True
+        self.seen_hashes.add(board_hash)
+        return False
+
+
+    def print_stats(self):
+        if (self.i_try + 1) % 10000 == 0:
+            print self.board
+            none_count = len(filter(lambda el: (el), self.board.map(lambda el: (el))))
+            self.best_none_count = min(
+                    none_count,
+                    self.best_none_count 
+            )
+            print "None count: " + str(none_count)
+            print "Best none count: " + str(self.best_none_count)
+
+    def valid_inner_state(self, inner_square, numbers):
         """
         See if numbers are valid in inner_sqare given board state `board`
 
@@ -58,7 +80,7 @@ class BoardFiller(object):
         """
         start_row, start_col, dim = inner_square
         for i, row_idx in enumerate(xrange(start_row, start_row + dim)):
-            existing_row_set = board.row_set(row_idx)
+            existing_row_set = self.board.row_set(row_idx)
             proposed_row_set = set()
             for i in xrange(i * dim, (i + 1) * dim):
                 proposed_row_set.add(numbers[i])
@@ -67,7 +89,7 @@ class BoardFiller(object):
                 return False
 
         for i, col_idx in enumerate(xrange(start_col, start_col + dim)):
-            existing_col_set = board.col_set(col_idx)
+            existing_col_set = self.board.col_set(col_idx)
             proposed_col_set = set()
             for i in xrange(i, len(numbers), dim):
                 proposed_col_set.add(numbers[i])

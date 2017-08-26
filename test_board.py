@@ -2,7 +2,7 @@ import unittest
 from coordinate import Coordinate
 import pdb
 from board import Board
-from board_filler import valid_inner_state, fill, BoardFiller
+from board_filler import BoardFiller
 
 class BoardTest(unittest.TestCase):
     def test_inner_squares_size(self):
@@ -68,10 +68,10 @@ class BoardTest(unittest.TestCase):
     def test_valid_state(self):
         test_board_with_nones = Board(3, 9, squares=list(self.squares_with_nones))
         self.assertTrue(
-                valid_inner_state(test_board_with_nones, (0, 0, 3), [1, 2, 3, 4, 5, 6, 7, 8, 9])
+                BoardFiller(test_board_with_nones).valid_inner_state((0, 0, 3), [1, 2, 3, 4, 5, 6, 7, 8, 9])
         )
         self.assertFalse(
-                valid_inner_state(test_board_with_nones, (0, 0, 3), [2, 1, 3, 4, 5, 6, 7, 8, 9])
+                BoardFiller(test_board_with_nones).valid_inner_state((0, 0, 3), [2, 1, 3, 4, 5, 6, 7, 8, 9])
         )
 
         # test none's are gone
@@ -112,11 +112,15 @@ class BoardTest(unittest.TestCase):
         board = Board(3, 9, squares=self.sparse_board())
         self.assertTrue(board.is_valid())
 
+    def test_board_hash(self):
+        board = Board(3, 9)
+        BoardFiller(board).fill()
+        print board
+
     def test_fill(self):
         board = Board(3, 9)
-        fill(board)
-        BoardFiller().fill(board)
-        print board
+        #BoardFiller(board).fill()
+        #print board
 
 if __name__ == '__main__':
     unittest.main()

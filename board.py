@@ -1,6 +1,5 @@
 import random
 import pdb
-from board_filler import fill
 from coordinate import Coordinate
 from itertools import permutations
 
