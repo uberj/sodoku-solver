@@ -1,5 +1,6 @@
 import unittest
 from board import Board
+from board_filler import valid_state
 
 class BoardTest(unittest.TestCase):
     def test_inner_squares_size(self):
@@ -21,6 +22,47 @@ class BoardTest(unittest.TestCase):
         self.assertEquals((6, 0, 3), inner_squares[6])
         self.assertEquals((6, 3, 3), inner_squares[7])
         self.assertEquals((6, 6, 3), inner_squares[8])
+
+    test_board = [
+        [1, 2, 3,    4, 5, 6,   7, 8, 9]
+        [4, 5, 6,    7, 8, 9,   1, 2, 3]
+        [7, 8, 9,    1, 2, 3,   4, 5, 6]
+
+        [9, 1, 2,    3, 4, 5,   6, 7, 8]
+        [3, 4, 5,    6, 7, 8,   9, 1, 2]
+        [6, 7, 8,    9, 1, 2,   3, 4, 5]
+
+        [8, 9, 1,    2, 3, 4,   5, 6, 7]
+        [2, 3, 4,    5, 6, 7,   8, 9, 1]
+        [5, 6, 7,    8, 9, 1,   2, 3, 4]
+    ]
+
+    def test_valid_state(self):
+        board = Board(3, 9)
+
+        board.squares = [
+                [None, None, None,  4, 5, 6,   7, 8, 9]
+                [None, None, None,  7, 8, 9,   1, 2, 3]
+                [None, None, None,  1, 2, 3,   4, 5, 6]
+
+                [9, 1, 2,    3, 4, 5,   6, 7, 8]
+                [3, 4, 5,    6, 7, 8,   9, 1, 2]
+                [6, 7, 8,    9, 1, 2,   3, 4, 5]
+
+                [8, 9, 1,    2, 3, 4,   5, 6, 7]
+                [2, 3, 4,    5, 6, 7,   8, 9, 1]
+                [5, 6, 7,    8, 9, 1,   2, 3, 4]
+        ]
+
+        self.assertTrue(
+                valid_state(board, (0, 0, 3) [1, 2, 3, 4, 5, 6, 7, 8, 9])
+        )
+        self.assertFalse(
+                valid_state(board, (0, 0, 3) [2, 1, 3, 4, 5, 6, 7, 8, 9])
+        )
+
+
+
 
 
 if __name__ == '__main__':
