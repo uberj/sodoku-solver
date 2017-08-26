@@ -1,20 +1,54 @@
 from random import shuffle
+from itertools import permutations
 
-def fill(self, board):
+i_try = 0
+
+def fill(board):
     """
     Pick inner square
         * calculate possible inner square permutations
         * iterate through perms and check for row col validitity
             * if valid choice is found, recurse into next inner square
     """
-    for inner_square in board.inner_squares():
-        numbers = list(xrange(board.inner_square_dimension))
-        shuffle(numbers)
-        for perm in numbers:
-            if valid_state(board, inner_square, numbers):
-                return
+    coordinates = board.all_square_coordinates()
+    shuffle(coordinates)
+    _fill_one_coord(board, coordinates)
 
-def valid_state(board, inner_square, numbers):
+def get_perms(cur_square, board):
+    # figure out which inner square permutations we should try
+    # don't do elimitation right now, optimize later
+    numbers = list(xrange(board.inner_square_dimension * board.inner_square_dimension))
+    return permutations(numbers)
+
+def _fill_one_coord(board, coordinates):
+    # get coordinates
+    if not coordinates:
+        return True
+    choices = list(xrange(1, board.dimension))
+    for coord in coordinates:
+        choices_so_far = set()
+        shuffle(choices)
+        to_try = set(coordinates)
+        to_try.remove(coord)
+        for choice in choices:
+            global i_try
+            i_try = i_try + 1
+            board.set(coord, choice)
+            if board.is_valid():
+                success = _fill_one_coord(board, to_try)
+                if success:
+                    return True
+
+            # something didn't work out, undo the move and try the next coordinate
+            # undo move
+            board.set(coord, None)
+            if i_try % 10000 == 0:
+                print board
+                print "num Nones: " + str(len(filter(lambda el: (el),
+                    board.map(lambda el: (el)))))
+    return False
+
+def valid_inner_state(board, inner_square, numbers):
     """
     See if numbers are valid in inner_sqare given board state `board`
 
