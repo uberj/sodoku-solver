@@ -39,7 +39,7 @@ class BoardTest(unittest.TestCase):
         [5, 6, 7,    8, 9, 1,   2, 3, 4]
     ]
 
-    squares_with_nones = [
+    squares_with_nones = lambda (_): [
             [None, None, None,  4, 5, 6,   7, 8, 9],
             [None, None, None,  7, 8, 9,   1, 2, 3],
             [None, None, None,  1, 2, 3,   4, 5, 6],
@@ -66,13 +66,7 @@ class BoardTest(unittest.TestCase):
     ]
 
     def test_valid_state(self):
-        test_board_with_nones = Board(3, 9, squares=list(self.squares_with_nones))
-        self.assertTrue(
-                BoardFiller(test_board_with_nones).valid_inner_state((0, 0, 3), [1, 2, 3, 4, 5, 6, 7, 8, 9])
-        )
-        self.assertFalse(
-                BoardFiller(test_board_with_nones).valid_inner_state((0, 0, 3), [2, 1, 3, 4, 5, 6, 7, 8, 9])
-        )
+        test_board_with_nones = Board(3, 9, squares=list(self.squares_with_nones()))
 
         # test none's are gone
         self.assertEquals(test_board_with_nones.col_set(0), set([9, 3, 6, 8, 2, 5]))
@@ -113,14 +107,14 @@ class BoardTest(unittest.TestCase):
         self.assertTrue(board.is_valid())
 
     def test_board_hash(self):
-        board = Board(3, 9)
+        board = Board(3, 9, squares=list(self.squares_with_nones()))
         BoardFiller(board).fill()
         print board
 
     def test_fill(self):
         board = Board(3, 9)
-        #BoardFiller(board).fill()
-        #print board
+        BoardFiller(board).fill()
+        print board
 
 if __name__ == '__main__':
     unittest.main()
