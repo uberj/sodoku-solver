@@ -1,5 +1,6 @@
 import unittest
 from coordinate import Coordinate
+from square import Square
 import pdb
 from board import Board
 from board_filler import BoardFiller
@@ -72,17 +73,19 @@ class BoardTest(unittest.TestCase):
         self.assertEquals(self.to_values(test_board_with_nones.col_set(0)), set([9, 3, 6, 8, 2, 5]))
         self.assertEquals(self.to_values(test_board_with_nones.row_set(0)), set([4, 5, 6, 7, 8, 9]))
 
+        #self.assertEquals(test_board_with_nones.get(Coordinate(0,0))), set([9, 3, 6, 8, 2, 5]))
+
+
     def to_values(self, squares):
-        return set(filter(lambda el: (el), map(lambda s: s['choice'], squares)))
+        return set(filter(lambda el: (el), map(lambda s: s.choice, squares)))
 
     def with_coords(self, choices):
         for row_idx, row in enumerate(choices):
             for col_idx, col in enumerate(row):
-                row[col_idx] = {
-                        'choice': col,
-                        'choices': [],
-                        'coord': Coordinate(row_idx, col_idx),
-                }
+                row[col_idx] = Square(
+                        choice=col,
+                        choices=[],
+                        coordinate=Coordinate(row_idx, col_idx))
         return choices
 
 
@@ -101,19 +104,19 @@ class BoardTest(unittest.TestCase):
     def test_is_valid_row_dupe(self):
         board = Board(3, 9, squares=self.with_coords(self.test_board()))
         self.assertTrue(board.is_valid())
-        board.set(Coordinate(0, 0), board.get(Coordinate(5, 0))['choice'], [])
+        board.set(Coordinate(0, 0), board.get(Coordinate(5, 0)).choice, [])
         self.assertFalse(board.is_valid())
 
     def test_is_valid_col_dupe(self):
         board = Board(3, 9, squares=self.with_coords(self.test_board()))
         self.assertTrue(board.is_valid())
-        board.set(Coordinate(0, 0), board.get(Coordinate(0, 5))['choice'], [])
+        board.set(Coordinate(0, 0), board.get(Coordinate(0, 5)).choice, [])
         self.assertFalse(board.is_valid())
 
     def test_is_valid_inner_square_dupe(self):
         board = Board(3, 9, squares=self.with_coords(self.test_board()))
         self.assertTrue(board.is_valid())
-        board.set(Coordinate(0, 0), board.get(Coordinate(0, 1))['choice'], [])
+        board.set(Coordinate(0, 0), board.get(Coordinate(0, 1)).choice, [])
         self.assertFalse(board.is_valid())
 
     def test_is_valid_sparse(self):
