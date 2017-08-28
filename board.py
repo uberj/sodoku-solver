@@ -126,6 +126,6 @@ class Board(object):
         b = ""
         for row in self.squares:
             for col in row:
-                b = b + (" %s " % (col or 0))
+                b = b + (" %s " % (col.choice or 0))
             b = b + "\n"
         return b

@@ -16,8 +16,6 @@ class BoardFiller(object):
         self.board = board
         coordinates = sorted(list(set(self.board.all_square_coordinates())))
         choices = list(xrange(1, self.board.dimension + 1))
-        for coord in coordinates:
-            choice_board.put(coord, choices)
 
     def fill(self):
         """
@@ -27,32 +25,32 @@ class BoardFiller(object):
                 * if valid choice is found, recurse into next inner square
         """
         #shuffle(coordinates)
-        squares = self.all_squares()
+        squares = list(self.all_squares())
         self._fill_squares(squares)
 
     def all_squares(self):
-        for row in self.squares:
+        for row in self.board.squares:
             for square in row:
                 yield square
 
     def _fill_squares(self, squares):
-        square = squares.pop()
-        choices = square['choices']
-        # for choice in choices:
-            # square['choice'] = choice
-            # for s in self.row_set(square['coord'].row):
-                # s['choices'].remove(choice)
-            # for square in self.
-            # for col_idx, row_id, dim in self.inner_squares():
-                # if square['col']
-
-            # self.col_set(square['coord'].col)
-            # square['choices'] = []
-            # self._fill_squares(squares)
+        if not squares:
+            return True
+        square = squares[0]
+        choices = self.board.square_choices(square)
+        for choice in choices:
+            square.choice = choice
+            self.print_stats()
+            success = self._fill_squares(squares[1:])
+            if success:
+                return True
+        # None of squares choices worked. undo and let the caller know to try
+        # their next choice
+        square.choice = None
         return False
 
     def already_tried(self, coord, choice):
-        board_hash = md5.md5(" ".join(self.board.map(lambda el: str(el['choice'])))).hexdigest()
+        board_hash = md5.md5(" ".join(self.board.map(lambda el: str(el.choice)))).hexdigest()
         #board_hash = " ".join(self.board.map(lambda el: str(el)))
         if board_hash in self.seen_hashes:
             # print " ".join(self.board.map(lambda el: str(el)))
@@ -65,7 +63,7 @@ class BoardFiller(object):
         # if (self.i_try + 1) % 100 == 0:
         if True:
             print self.board
-            none_count = len(filter(lambda el: (el['choice']), self.board.map(lambda el: (el))))
+            none_count = len(filter(lambda el: (el.choice), self.board.map(lambda el: (el))))
             self.best_none_count = min(
                     none_count,
                     self.best_none_count 

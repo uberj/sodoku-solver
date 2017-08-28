@@ -154,10 +154,26 @@ class BoardTest(unittest.TestCase):
         # BoardFiller(board).fill()
         # print board
 
+
+    no_random_board = lambda (_): [
+            [1,  2,  3,  4,  5,  6,  7,  8,  9],
+            [4,  5,  6,  7,  8,  9,  1,  2,  3],
+            [7,  8,  9,  1,  2,  3,  4,  5,  6],
+            [2,  1,  4,  3,  6,  5,  8,  9,  7],
+            [3,  6,  5,  8,  9,  7,  2,  1,  4],
+            [8,  9,  7,  2,  1,  4,  3,  6,  5],
+            [5,  3,  1,  6,  4,  2,  9,  7,  8],
+            [6,  4,  2,  9,  7,  8,  5,  3,  1],
+            [9,  7,  8,  5,  3,  1,  6,  4,  2]]
+
     def test_fill(self):
         board = Board(3, 9)
-        # BoardFiller(board).fill()
-        # print board
+        BoardFiller(board).fill()
+        the_board = []
+        for row in board.squares:
+            the_board.append(map(lambda s: s.choice, row))
+
+        self.assertEquals(the_board, self.no_random_board())
 
 if __name__ == '__main__':
     unittest.main()
