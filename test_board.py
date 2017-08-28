@@ -67,14 +67,41 @@ class BoardTest(unittest.TestCase):
     ]
 
     def test_valid_state(self):
-        test_board_with_nones = Board(3, 9, squares=self.with_coords(list(self.squares_with_nones())))
+        board = Board(3, 9, squares=self.with_coords(list(self.squares_with_nones())))
 
         # test none's are gone
-        self.assertEquals(self.to_values(test_board_with_nones.col_set(0)), set([9, 3, 6, 8, 2, 5]))
-        self.assertEquals(self.to_values(test_board_with_nones.row_set(0)), set([4, 5, 6, 7, 8, 9]))
+        self.assertEquals(self.to_values(board.col_set(0)), set([9, 3, 6, 8, 2, 5]))
+        self.assertEquals(self.to_values(board.row_set(0)), set([4, 5, 6, 7, 8, 9]))
 
-        #self.assertEquals(test_board_with_nones.get(Coordinate(0,0))), set([9, 3, 6, 8, 2, 5]))
+        square_0_0 = board.get(Coordinate(0,0))
+        self.assertEquals(board.square_choices(square_0_0), set([1]))
 
+        square_0_1 = board.get(Coordinate(0,1))
+        self.assertEquals(board.square_choices(square_0_1), set([2]))
+
+        square_0_2 = board.get(Coordinate(0,2))
+        self.assertEquals(board.square_choices(square_0_2), set([3]))
+
+        square_1_0 = board.get(Coordinate(1,0))
+        self.assertEquals(board.square_choices(square_1_0), set([4]))
+
+        square_1_1 = board.get(Coordinate(1,1))
+        self.assertEquals(board.square_choices(square_1_1), set([5]))
+
+        square_1_2 = board.get(Coordinate(1,2))
+        self.assertEquals(board.square_choices(square_1_2), set([6]))
+
+        square_2_0 = board.get(Coordinate(2,0))
+        self.assertEquals(board.square_choices(square_2_0), set([7]))
+
+        square_2_1 = board.get(Coordinate(2,1))
+        self.assertEquals(board.square_choices(square_2_1), set([8]))
+
+        square_2_2 = board.get(Coordinate(2,2))
+        self.assertEquals(board.square_choices(square_2_2), set([9]))
+
+        square_3_3 = board.get(Coordinate(3,3))
+        self.assertEquals(board.square_choices(square_3_3), set())
 
     def to_values(self, squares):
         return set(filter(lambda el: (el), map(lambda s: s.choice, squares)))
@@ -84,7 +111,6 @@ class BoardTest(unittest.TestCase):
             for col_idx, col in enumerate(row):
                 row[col_idx] = Square(
                         choice=col,
-                        choices=[],
                         coordinate=Coordinate(row_idx, col_idx))
         return choices
 

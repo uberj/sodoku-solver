@@ -1,7 +1,7 @@
 import random
 import pdb
 from coordinate import Coordinate
-from itertools import permutations
+from itertools import permutations, chain
 from square import Square
 
 class Board(object):
@@ -35,6 +35,11 @@ class Board(object):
         else:
             self.squares = squares
 
+    def square_choices(self, square):
+        taken = filter(lambda el: (el),
+                map(lambda s: s.choice, self.game_set(square.coordinate)))
+        return set(self.choices).difference(taken)
+
     def set(self, coord, number, choices):
         self.squares[coord.row][coord.col].choice = number
         self.squares[coord.row][coord.col].choices = choices
@@ -67,10 +72,24 @@ class Board(object):
         return self.squares[row_idx]
 
     def game_set(self, coord):
-        return itertools.chain(
-                self.col_set(coord.col),
-                self.row_set(coord.col)
-        )
+        return (
+                list(self.col_set(coord.col)) +
+                self.row_set(coord.row) +
+                list(self.inner_square_set(coord)))
+
+    def inner_square_set(self, coord):
+        for col_idx, row_idx, dim in self.inner_squares():
+            if (coord.row >= row_idx and coord.row < row_idx + dim
+                    and
+                coord.col >= col_idx and coord.col < col_idx + dim
+            ):
+                squares = []
+                for row in self.squares[row_idx:row_idx+dim]:
+                    for col in row[col_idx:col_idx+dim]:
+                        squares.append(col)
+                return squares
+
+        raise Exception("no inner square found for coord " + str(coord))
 
     def is_valid(self):
         for row_idx, row in enumerate(self.squares):
