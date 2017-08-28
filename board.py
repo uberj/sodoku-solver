@@ -9,23 +9,34 @@ class Board(object):
             inner_square_dimension,
             dimension,
             seed=10,
-            squares=[]
+            squares=[],
+            choices=None
     ):
         self.inner_square_dimension = inner_square_dimension
         self.dimension = dimension
         self.seed = seed
         self.random = random.Random(seed)
+        self.choices=choices or list(xrange(1, dimension + 1))
 
         if not squares:
             self.squares = []
             # fill the board
             for i in xrange(dimension):
                 self.squares.append([None] * dimension)
+            coordinates = sorted(list(set(self.all_square_coordinates())))
+            choices = list(xrange(1, self.dimension + 1))
+            for coord in coordinates:
+                self.squares[coord.row][coord.col] = {
+                        'choice': None,
+                        'choices': choices,
+                        'coord': coord,
+                }
         else:
             self.squares = squares
 
-    def set(self, coord, number):
-        self.squares[coord.row][coord.col] = number
+    def set(self, coord, number, choices):
+        self.squares[coord.row][coord.col]['choice'] = number
+        self.squares[coord.row][coord.col]['choices'] = choices
 
     def get(self, coord):
         return self.squares[coord.row][coord.col]
@@ -48,30 +59,29 @@ class Board(object):
         ))
 
     def col_set(self, col_idx):
-        return set(
-                filter(lambda el: (el),
-                    list(row[col_idx] for row in self.squares)))
+        for row in self.squares:
+            yield row[col_idx]
 
     def row_set(self, row_idx):
-        return set(filter(lambda el: (el), self.squares[row_idx]))
+        return self.squares[row_idx]
 
     def is_valid(self):
-        for col_idx, row in enumerate(self.squares):
-            no_none_row = filter(lambda el: (el), row)
+        for row_idx, row in enumerate(self.squares):
+            no_none_row = filter(lambda el: (el), map(lambda el: el['choice'], row))
             if len(no_none_row) != len(set(no_none_row)):
                 # there is something in the row more than once
                 return False
             seen_col_values = set()
             for row in self.squares:
-                if row[col_idx] is not None and row[col_idx] in seen_col_values:
+                if row[row_idx]['choice'] is not None and row[row_idx]['choice'] in seen_col_values:
                     return False
-                seen_col_values.add(row[col_idx])
+                seen_col_values.add(row[row_idx]['choice'])
 
         for col_idx, row_idx, dim in self.inner_squares():
             numbers = []
             for row in self.squares[row_idx:row_idx+dim]:
                 for col in row[col_idx:col_idx+dim]:
-                    numbers.append(col)
+                    numbers.append(col['choice'])
 
             no_nones = filter(lambda el: (el), numbers)
 

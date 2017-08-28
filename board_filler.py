@@ -10,9 +10,15 @@ class BoardFiller(object):
     i_try = 0
     best_none_count = 9999
     seen_hashes = set()
+    choice_board = {}
 
     def __init__(self, board):
         self.board = board
+        coordinates = sorted(list(set(self.board.all_square_coordinates())))
+        choices = list(xrange(1, self.board.dimension + 1))
+        for coord in coordinates:
+            choice_board.put(coord, choices)
+
 
     def fill(self):
         """
@@ -21,7 +27,6 @@ class BoardFiller(object):
             * iterate through perms and check for row col validitity
                 * if valid choice is found, recurse into next inner square
         """
-        coordinates = sorted(list(set(self.board.all_square_coordinates())))
         #shuffle(coordinates)
         self._fill_coords(coordinates)
 
@@ -40,6 +45,7 @@ class BoardFiller(object):
 
 
     def _fill_coords(self, coordinates):
+        return True
         workers = []
         for coord in coordinates:
             workers.append(self.work(coord))
@@ -87,7 +93,7 @@ class BoardFiller(object):
         return False
 
     def already_tried(self, coord, choice):
-        board_hash = md5.md5(" ".join(self.board.map(lambda el: str(el)))).hexdigest()
+        board_hash = md5.md5(" ".join(self.board.map(lambda el: str(el['choice'])))).hexdigest()
         #board_hash = " ".join(self.board.map(lambda el: str(el)))
         if board_hash in self.seen_hashes:
             # print " ".join(self.board.map(lambda el: str(el)))
@@ -100,7 +106,7 @@ class BoardFiller(object):
         # if (self.i_try + 1) % 100 == 0:
         if True:
             print self.board
-            none_count = len(filter(lambda el: (el), self.board.map(lambda el: (el))))
+            none_count = len(filter(lambda el: (el['choice']), self.board.map(lambda el: (el))))
             self.best_none_count = min(
                     none_count,
                     self.best_none_count 

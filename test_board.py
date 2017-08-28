@@ -66,55 +66,69 @@ class BoardTest(unittest.TestCase):
     ]
 
     def test_valid_state(self):
-        test_board_with_nones = Board(3, 9, squares=list(self.squares_with_nones()))
+        test_board_with_nones = Board(3, 9, squares=self.with_coords(list(self.squares_with_nones())))
 
         # test none's are gone
-        self.assertEquals(test_board_with_nones.col_set(0), set([9, 3, 6, 8, 2, 5]))
-        self.assertEquals(test_board_with_nones.row_set(0), set([4, 5, 6, 7, 8, 9]))
+        self.assertEquals(self.to_values(test_board_with_nones.col_set(0)), set([9, 3, 6, 8, 2, 5]))
+        self.assertEquals(self.to_values(test_board_with_nones.row_set(0)), set([4, 5, 6, 7, 8, 9]))
+
+    def to_values(self, squares):
+        return set(filter(lambda el: (el), map(lambda s: s['choice'], squares)))
+
+    def with_coords(self, choices):
+        for row_idx, row in enumerate(choices):
+            for col_idx, col in enumerate(row):
+                row[col_idx] = {
+                        'choice': col,
+                        'choices': [],
+                        'coord': Coordinate(row_idx, col_idx),
+                }
+        return choices
+
 
     def test_col_set(self):
-        board = Board(3, 9, squares=self.test_board())
-        self.assertEquals(board.col_set(0), set([1, 4, 7, 9, 3, 6, 8, 2, 5]))
-        self.assertEquals(board.col_set(1), set([2, 5, 8, 1, 4, 7, 9, 3, 6]))
-        self.assertEquals(board.col_set(8), set([9, 3, 6, 8, 2, 5, 7, 1, 4]))
+        board = Board(3, 9, squares=self.with_coords(self.test_board()))
+        self.assertEquals(self.to_values(board.col_set(0)), set([1, 4, 7, 9, 3, 6, 8, 2, 5]))
+        self.assertEquals(self.to_values(board.col_set(1)), set([2, 5, 8, 1, 4, 7, 9, 3, 6]))
+        self.assertEquals(self.to_values(board.col_set(8)), set([9, 3, 6, 8, 2, 5, 7, 1, 4]))
 
     def test_row_set(self):
-        board = Board(3, 9, squares=self.test_board())
-        self.assertEquals(board.row_set(0), set([1, 2, 3, 4, 5, 6, 7, 8, 9]))
-        self.assertEquals(board.row_set(1), set([4, 5, 6, 7, 8, 9, 1, 2, 3]))
-        self.assertEquals(board.row_set(8), set([5, 6, 7, 8, 9, 1, 2, 3, 4]))
+        board = Board(3, 9, squares=self.with_coords(self.test_board()))
+        self.assertEquals(self.to_values(board.row_set(0)), set([1, 2, 3, 4, 5, 6, 7, 8, 9]))
+        self.assertEquals(self.to_values(board.row_set(1)), set([4, 5, 6, 7, 8, 9, 1, 2, 3]))
+        self.assertEquals(self.to_values(board.row_set(8)), set([5, 6, 7, 8, 9, 1, 2, 3, 4]))
 
     def test_is_valid_row_dupe(self):
-        board = Board(3, 9, squares=self.test_board())
+        board = Board(3, 9, squares=self.with_coords(self.test_board()))
         self.assertTrue(board.is_valid())
-        board.set(Coordinate(0, 0), board.get(Coordinate(5, 0)))
+        board.set(Coordinate(0, 0), board.get(Coordinate(5, 0))['choice'], [])
         self.assertFalse(board.is_valid())
 
     def test_is_valid_col_dupe(self):
-        board = Board(3, 9, squares=self.test_board())
+        board = Board(3, 9, squares=self.with_coords(self.test_board()))
         self.assertTrue(board.is_valid())
-        board.set(Coordinate(0, 0), board.get(Coordinate(0, 5)))
+        board.set(Coordinate(0, 0), board.get(Coordinate(0, 5))['choice'], [])
         self.assertFalse(board.is_valid())
 
     def test_is_valid_inner_square_dupe(self):
-        board = Board(3, 9, squares=self.test_board())
+        board = Board(3, 9, squares=self.with_coords(self.test_board()))
         self.assertTrue(board.is_valid())
-        board.set(Coordinate(0, 0), board.get(Coordinate(0, 1)))
+        board.set(Coordinate(0, 0), board.get(Coordinate(0, 1))['choice'], [])
         self.assertFalse(board.is_valid())
 
     def test_is_valid_sparse(self):
-        board = Board(3, 9, squares=self.sparse_board())
+        board = Board(3, 9, squares=self.with_coords(self.sparse_board()))
         self.assertTrue(board.is_valid())
 
     def test_board_hash(self):
-        board = Board(3, 9, squares=list(self.squares_with_nones()))
+        board = Board(3, 9, squares=self.with_coords(list(self.squares_with_nones())))
         # BoardFiller(board).fill()
         # print board
 
     def test_fill(self):
         board = Board(3, 9)
-        BoardFiller(board).fill()
-        print board
+        # BoardFiller(board).fill()
+        # print board
 
 if __name__ == '__main__':
     unittest.main()
