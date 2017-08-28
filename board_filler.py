@@ -21,37 +21,69 @@ class BoardFiller(object):
             * iterate through perms and check for row col validitity
                 * if valid choice is found, recurse into next inner square
         """
-        coordinates = self.board.all_square_coordinates()
-        shuffle(coordinates)
+        coordinates = sorted(list(set(self.board.all_square_coordinates())))
+        #shuffle(coordinates)
         self._fill_coords(coordinates)
 
+    def work(self, coord):
+        choices = list(xrange(1, self.board.dimension + 1))
+        while True:
+            shuffle(choices)
+            for choice in choices:
+                self.board.set(coord, choice)
+                self.print_stats()
+                if self.board.is_valid() and not self.already_tried(coord, choice):
+                    yield True
+                else:
+                    self.board.set(coord, None)
+            yield False
+
+
     def _fill_coords(self, coordinates):
+        workers = []
+        for coord in coordinates:
+            workers.append(self.work(coord))
+
+        while True:
+            for worker in workers:
+                worker.next()
+
+        for row in self.squares:
+            for col in row:
+                result.append(l(col))
+
         # get coordinates
         if not coordinates:
             return True
         choices = list(xrange(1, self.board.dimension))
-        for coord in coordinates:
-            to_try = set(coordinates)
-            to_try.remove(coord)
-            taken = self.board.col_set(coord.col).union(
-                    self.board.row_set(coord.row)
-            )
+        #shuffle(choices)
+        coord = coordinates.pop()
+        print coord
 
-            for choice in set(choices).difference(taken):
-                self.i_try = self.i_try + 1
-                self.board.set(coord, choice)
-                # print "coord: " + str(coord)
-                # print "choice: " + str(choice)
-                if self.board.is_valid() and not self.already_tried(coord, choice):
-                    return self._fill_coords(to_try)
-                    # if success:
-                        # return True
+        taken = self.board.col_set(coord.col).union(
+                self.board.row_set(coord.row)
+        )
 
-                # something didn't work out, undo the move and try the next coordinate
-                # undo move
-                self.board.set(coord, None)
-                self.print_stats()
+        good_choices = set(choices).difference(taken)
+        for choice in sorted(list(good_choices)):
+            self.i_try = self.i_try + 1
+            self.board.set(coord, choice)
+            # print "coord: " + str(coord)
+            # print "choice: " + str(choice)
+            if self.board.is_valid() and not self.already_tried(coord, choice):
+                success = self._fill_coords(coordinates)
+                if success:
+                    return True
+                # if success:
+                    # return True
 
+            # something didn't work out, undo the move and try the next coordinate
+            # undo move
+            self.board.set(coord, None)
+            self.print_stats()
+
+        # we failed to place for this coordinate
+        coordinates.insert(0, coord)
         return False
 
     def already_tried(self, coord, choice):
@@ -59,14 +91,14 @@ class BoardFiller(object):
         #board_hash = " ".join(self.board.map(lambda el: str(el)))
         if board_hash in self.seen_hashes:
             # print " ".join(self.board.map(lambda el: str(el)))
-            # print "dupe!"
             return True
         self.seen_hashes.add(board_hash)
         return False
 
 
     def print_stats(self):
-        if (self.i_try + 1) % 10000 == 0:
+        # if (self.i_try + 1) % 100 == 0:
+        if True:
             print self.board
             none_count = len(filter(lambda el: (el), self.board.map(lambda el: (el))))
             self.best_none_count = min(

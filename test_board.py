@@ -108,8 +108,8 @@ class BoardTest(unittest.TestCase):
 
     def test_board_hash(self):
         board = Board(3, 9, squares=list(self.squares_with_nones()))
-        BoardFiller(board).fill()
-        print board
+        # BoardFiller(board).fill()
+        # print board
 
     def test_fill(self):
         board = Board(3, 9)

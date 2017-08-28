@@ -41,9 +41,9 @@ class Board(object):
                 )
 
     def all_square_coordinates(self):
+        cords = reversed(sorted(list(xrange(self.dimension)) + list(xrange(self.dimension))))
         return map(lambda c: Coordinate(*c), permutations(
-            list(xrange(self.dimension)) +
-            list(xrange(self.dimension)),
+            cords,
             2
         ))
 
