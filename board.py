@@ -29,8 +29,7 @@ class Board(object):
             for coord in coordinates:
                 self.squares[coord.row][coord.col] = Square(
                         choice=None,
-                        choices=choices,
-                        coordinate=coord,
+                        coordinate=coord
                 )
         else:
             self.squares = squares
@@ -72,10 +71,10 @@ class Board(object):
         return self.squares[row_idx]
 
     def game_set(self, coord):
-        return (
-                list(self.col_set(coord.col)) +
-                self.row_set(coord.row) +
-                list(self.inner_square_set(coord)))
+        return chain(
+                self.col_set(coord.col),
+                self.row_set(coord.row),
+                self.inner_square_set(coord))
 
     def inner_square_set(self, coord):
         for col_idx, row_idx, dim in self.inner_squares():
