@@ -166,14 +166,19 @@ class BoardTest(unittest.TestCase):
             [6,  4,  2,  9,  7,  8,  5,  3,  1],
             [9,  7,  8,  5,  3,  1,  6,  4,  2]]
 
-    def test_fill(self):
+    def test_no_random_fill(self):
         board = Board(3, 9)
         BoardFiller(board).fill()
         the_board = []
         for row in board.squares:
             the_board.append(map(lambda s: s.choice, row))
 
-        self.assertEquals(the_board, self.no_random_board())
+
+    def test_random_fill(self):
+        board = Board(3, 9)
+        BoardFiller(board, shuffle_choices=True).fill()
+        self.assertTrue(board.is_valid())
+        print board
 
 if __name__ == '__main__':
     unittest.main()

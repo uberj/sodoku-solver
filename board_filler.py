@@ -11,11 +11,18 @@ class BoardFiller(object):
     best_none_count = 9999
     seen_hashes = set()
     choice_board = {}
+    choices = []
 
-    def __init__(self, board):
+    def __init__(
+            self,
+            board,
+            shuffle_choices=False,
+            shuffle_squares=False
+    ):
         self.board = board
-        coordinates = sorted(list(set(self.board.all_square_coordinates())))
-        choices = list(xrange(1, self.board.dimension + 1))
+        self.choices = list(xrange(1, self.board.dimension + 1))
+        self.shuffle_squares = shuffle_squares
+        self.shuffle_choices = shuffle_choices
 
     def fill(self):
         """
@@ -24,8 +31,9 @@ class BoardFiller(object):
             * iterate through perms and check for row col validitity
                 * if valid choice is found, recurse into next inner square
         """
-        #shuffle(coordinates)
         squares = list(self.all_squares())
+        if self.shuffle_squares:
+            shuffle(squares)
         self._fill_squares(squares)
 
     def all_squares(self):
@@ -33,11 +41,19 @@ class BoardFiller(object):
             for square in row:
                 yield square
 
+    def square_choices(self, square):
+        taken = filter(lambda el: (el),
+                map(lambda s: s.choice, self.board.game_set(square.coordinate)))
+        choices = list(set(self.choices).difference(taken))
+        if self.shuffle_choices:
+            shuffle(choices)
+        return choices
+
     def _fill_squares(self, squares):
         if not squares:
             return True
         square = squares[0]
-        choices = self.board.square_choices(square)
+        choices = self.square_choices(square)
         for choice in choices:
             square.choice = choice
             self.print_stats()
