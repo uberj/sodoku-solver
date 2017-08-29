@@ -6,14 +6,12 @@ import sys
 import time
 import md5
 
-
 class BoardFiller(object):
     dupe_count = 0
     i_try = 0
     none_count = 99999
     best_none_count = 9999
     seen_hashes = set()
-    choice_board = {}
     choices = []
 
     def __init__(
