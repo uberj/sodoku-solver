@@ -63,17 +63,17 @@ class Board(object):
             2
         ))
 
-    def col_set(self, col_idx):
+    def col_set(self, coordinate):
         for row in self.squares:
-            yield row[col_idx]
+            yield row[coordinate.col]
 
-    def row_set(self, row_idx):
-        return self.squares[row_idx]
+    def row_set(self, coordinate):
+        return self.squares[coordinate.row]
 
     def game_set(self, coord):
         return chain(
-                self.col_set(coord.col),
-                self.row_set(coord.row),
+                self.col_set(coord),
+                self.row_set(coord),
                 self.inner_square_set(coord))
 
     def inner_square_set(self, coord):

@@ -1,12 +1,13 @@
 from random import shuffle
+from itertools import permutations, chain
 import pdb
 import sys
-from itertools import permutations
 import time
 import md5
 
 
 class BoardFiller(object):
+    dupe_count = 0
     i_try = 0
     best_none_count = 9999
     seen_hashes = set()
@@ -56,8 +57,13 @@ class BoardFiller(object):
         choices = self.square_choices(square)
         for choice in choices:
             square.choice = choice
+            if self.leaves_no_choices_for_others(square):
+                continue
             self.print_stats()
-            success = self._fill_squares(squares[1:])
+            to_try_next = squares[1:]
+            if self.shuffle_squares:
+                shuffle(to_try_next)
+            success = self._fill_squares(to_try_next)
             if success:
                 return True
         # None of squares choices worked. undo and let the caller know to try
@@ -65,24 +71,31 @@ class BoardFiller(object):
         square.choice = None
         return False
 
-    def already_tried(self, coord, choice):
+    def leaves_no_choices_for_others(self, square):
+        for square in chain(self.board.col_set(square.coordinate)):
+            break
+
+    def already_tried(self):
         board_hash = md5.md5(" ".join(self.board.map(lambda el: str(el.choice)))).hexdigest()
-        #board_hash = " ".join(self.board.map(lambda el: str(el)))
         if board_hash in self.seen_hashes:
-            # print " ".join(self.board.map(lambda el: str(el)))
             return True
         self.seen_hashes.add(board_hash)
         return False
 
 
     def print_stats(self):
-        # if (self.i_try + 1) % 100 == 0:
-        if True:
+        if self.already_tried():
+            self.dupe_count = self.dupe_count + 1
+        none_count = len(filter(
+            lambda el: (el is None), self.board.map(lambda el: (el.choice))))
+        self.best_none_count = min(
+                none_count,
+                self.best_none_count 
+        )
+        self.i_try = self.i_try + 1
+        if (self.i_try) % 10000 == 0:
             print self.board
-            none_count = len(filter(lambda el: (el.choice), self.board.map(lambda el: (el))))
-            self.best_none_count = min(
-                    none_count,
-                    self.best_none_count 
-            )
+            print "Num tries: " + str(self.i_try)
+            print "Dupe count: " + str(self.dupe_count)
             print "None count: " + str(none_count)
             print "Best none count: " + str(self.best_none_count)
