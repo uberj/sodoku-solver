@@ -1,5 +1,6 @@
 from random import shuffle
 from itertools import permutations, chain
+from board import Board
 import pdb
 import sys
 import time
@@ -35,7 +36,7 @@ class BoardFiller(object):
         squares = list(self.all_squares())
         if self.shuffle_squares:
             shuffle(squares)
-        self._fill_squares(squares)
+        return self._fill_squares(squares)
 
     def all_squares(self):
         for row in self.board.squares:
@@ -72,8 +73,12 @@ class BoardFiller(object):
         return False
 
     def leaves_no_choices_for_others(self, square):
-        for square in chain(self.board.col_set(square.coordinate)):
-            break
+        is_candidate = lambda s: s.coordinate != square.coordinate and s.choice is None
+        neighbors = filter(is_candidate, self.board.game_set(square.coordinate))
+        for neighbor_square in neighbors:
+            if not self.square_choices(neighbor_square):
+                return True
+        return False
 
     def already_tried(self):
         board_hash = md5.md5(" ".join(self.board.map(lambda el: str(el.choice)))).hexdigest()
@@ -99,3 +104,13 @@ class BoardFiller(object):
             print "Dupe count: " + str(self.dupe_count)
             print "None count: " + str(none_count)
             print "Best none count: " + str(self.best_none_count)
+
+if __name__ == "__main__":
+    board = Board(3, 9)
+    assert BoardFiller(
+            board,
+            shuffle_choices=True,
+            shuffle_squares=True
+    ).fill()
+    assert board.is_valid()
+    print board
