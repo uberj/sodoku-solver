@@ -26,20 +26,13 @@ class BoardFiller(object):
         self.shuffle_choices = shuffle_choices
 
     def fill(self):
-        squares = list(self.all_squares())
+        squares = list(self.board.all_squares())
         if self.shuffle_squares:
             shuffle(squares)
         return self._fill_squares(squares)
 
-    def all_squares(self):
-        for row in self.board.squares:
-            for square in row:
-                yield square
-
     def square_choices(self, square):
-        taken = filter(lambda el: (el),
-                map(lambda s: s.choice, self.board.game_set(square.coordinate)))
-        choices = list(set(self.choices).difference(taken))
+        choices = self.board.square_choices(square, self.choices)
         if self.shuffle_choices:
             shuffle(choices)
         return choices

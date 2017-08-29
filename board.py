@@ -10,14 +10,12 @@ class Board(object):
             inner_square_dimension,
             dimension,
             seed=10,
-            squares=[],
-            choices=None
+            squares=[]
     ):
         self.inner_square_dimension = inner_square_dimension
         self.dimension = dimension
         self.seed = seed
-        self.random = random.Random(seed)
-        self.choices=choices or list(xrange(1, dimension + 1))
+        self.random=random.Random(seed)
 
         if not squares:
             self.squares = []
@@ -25,7 +23,6 @@ class Board(object):
             for i in xrange(dimension):
                 self.squares.append([None] * dimension)
             coordinates = sorted(list(set(self.all_square_coordinates())))
-            choices = list(xrange(1, self.dimension + 1))
             for coord in coordinates:
                 self.squares[coord.row][coord.col] = Square(
                         choice=None,
@@ -34,9 +31,13 @@ class Board(object):
         else:
             self.squares = squares
 
-    def set(self, coord, number, choices):
+    def all_squares(self):
+        for row in self.squares:
+            for square in row:
+                yield square
+
+    def set(self, coord, number):
         self.squares[coord.row][coord.col].choice = number
-        self.squares[coord.row][coord.col].choices = choices
 
     def get(self, coord):
         return self.squares[coord.row][coord.col]
@@ -85,6 +86,11 @@ class Board(object):
 
         raise Exception("no inner square found for coord " + str(coord))
 
+    def square_choices(self, square, choices):
+        taken = filter(lambda el: (el),
+                map(lambda s: s.choice, self.game_set(square.coordinate)))
+        return list(set(choices).difference(taken))
+
     def is_valid(self):
         for row_idx, row in enumerate(self.squares):
             no_none_row = filter(lambda el: (el), map(lambda el: el.choice, row))
@@ -121,6 +127,6 @@ class Board(object):
         b = ""
         for row in self.squares:
             for col in row:
-                b = b + (" %s " % (col.choice or 0))
+                b = b + (" %s " % (col.choice or '_'))
             b = b + "\n"
         return b
