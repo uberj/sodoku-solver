@@ -176,13 +176,15 @@ class BoardTest(unittest.TestCase):
 
     def test_random_fill(self):
         board = Board(3, 9)
-        self.assertTrue(BoardFiller(
+        board_filler = BoardFiller(
                 board,
                 shuffle_choices=True,
                 shuffle_squares=True
-        ).fill())
-        self.assertTrue(board.is_valid())
+        )
+        self.assertTrue(board_filler.fill())
         print board
+        self.assertEquals(0, board_filler.none_count)
+        self.assertTrue(board.is_valid())
 
 if __name__ == '__main__':
     unittest.main()

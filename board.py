@@ -5,8 +5,8 @@ from itertools import permutations, chain
 from square import Square
 
 class Board(object):
-
-    def __init__(self,
+    def __init__(
+            self,
             inner_square_dimension,
             dimension,
             seed=10,
@@ -33,11 +33,6 @@ class Board(object):
                 )
         else:
             self.squares = squares
-
-    def square_choices(self, square):
-        taken = filter(lambda el: (el),
-                map(lambda s: s.choice, self.game_set(square.coordinate)))
-        return set(self.choices).difference(taken)
 
     def set(self, coord, number, choices):
         self.squares[coord.row][coord.col].choice = number
