@@ -87,14 +87,14 @@ class BoardFiller(object):
 
     def print_stats(self):
         if self.already_tried():
-            self.dupe_count = self.dupe_count + 1
+            self.dupe_count += 1
         self.none_count = len(filter(
             lambda el: (el is None), self.board.map(lambda el: (el.choice))))
         self.best_none_count = min(
                 self.none_count,
                 self.best_none_count 
         )
-        self.i_try = self.i_try + 1
+        self.i_try += 1
         if (self.i_try) % 1000 == 0:
             print self.board
             print "Num tries: " + str(self.i_try)

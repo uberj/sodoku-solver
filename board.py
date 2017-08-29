@@ -123,6 +123,27 @@ class Board(object):
                 result.append(l(col))
         return result
 
+    def ascii(self):
+        b = ""
+        b += self.ascii_row()
+        for i, row in enumerate(self.squares):
+            b += "|"
+            for j, col in enumerate(row):
+                b = b + (" %s " % (col.choice or '_'))
+                if j != len(self.squares):
+                    b = b + "|"
+            b = b + "\n"
+            b += self.ascii_row()
+            # if i == len(self.squares):
+        return b
+
+    def ascii_row(self):
+        b = ""
+        for _ in xrange(self.dimension):
+            b += "+" + "-" * self.inner_square_dimension
+        b += "+\n"
+        return b
+
     def __str__(self):
         b = ""
         for row in self.squares:
