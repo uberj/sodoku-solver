@@ -71,8 +71,6 @@ class BoardFiller(object):
 
             if success:
                 return True
-            else:
-                print "failed!"
 
         # None of squares choices worked. undo and let the caller know to try
         # their next choice
