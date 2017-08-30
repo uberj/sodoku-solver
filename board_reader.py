@@ -24,13 +24,22 @@ class BoardReader(object):
             for row in ifile.readlines():
                 values = []
                 for square_value in filter(lambda e: (e.strip()), map(lambda c: c.strip(), row.split(" "))):
-                        values.append(square_value)
+                        values.append(self.smart_value(square_value))
                 if values:
                     squares.append(values)
 
             if squares:
                 boards.append(squares)
         return boards
+
+    def smart_value(self, value):
+        if value in ("X", "_", "None"):
+            return None
+        if value.isdigit():
+            return int(value)
+
+        raise Exception("Unknown value " + value)
+
 
 if __name__ == "__main__":
     # print squares

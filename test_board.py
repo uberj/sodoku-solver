@@ -183,7 +183,6 @@ class BoardTest(unittest.TestCase):
                 shuffle_squares=True
         )
         self.assertTrue(board_filler.fill())
-        print board
         self.assertEquals(0, board_filler.none_count)
         self.assertTrue(board.is_valid())
 

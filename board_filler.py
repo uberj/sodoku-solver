@@ -13,17 +13,20 @@ class BoardFiller(object):
     best_none_count = 9999
     seen_hashes = set()
     choices = []
+    stats_on = True
 
     def __init__(
             self,
             board,
             shuffle_choices=False,
-            shuffle_squares=False
+            shuffle_squares=False,
+            stats_on=True
     ):
         self.board = board
         self.choices = list(xrange(1, self.board.dimension + 1))
         self.shuffle_squares = shuffle_squares
         self.shuffle_choices = shuffle_choices
+        self.stats_on = stats_on
 
     def fill(self):
         squares = list(self.board.all_squares())
@@ -50,13 +53,21 @@ class BoardFiller(object):
         if not squares:
             return True
         square, to_try_next = self.choose_next_square(squares)
+
+        if not square.mutable:
+            success = self._fill_squares(to_try_next)
+            if success:
+                return True
+            return False
+
         choices = self.square_choices(square)
         for choice in choices:
             square.choice = choice
             if self.leaves_no_choices_for_others(square):
                 continue
 
-            self.print_stats()
+            if self.stats_on:
+                self.print_stats()
 
             if self.shuffle_squares:
                 shuffle(to_try_next)
