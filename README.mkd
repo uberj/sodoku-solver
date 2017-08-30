@@ -1,8 +1,10 @@
 Bored on a plane. A nice puzzle on vacation. Because why not...
 
 also:
-* no use of the internet to lookup anything (including code docs)
+* no use of the internet to lookup anything\* (including code docs)
 * no libraries (on a plane, with no internet access)
+
+_* except to lookup some hard puzzles to independantly test my program_
 
 `python board_filler.py`: Will build a random board from scratch
 `python puzzle_creator.py`: Will build a board and then randomly remove some numbers so you can play sodoku
