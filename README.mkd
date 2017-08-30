@@ -2,7 +2,7 @@ Bored on a plane. A nice puzzle on vacation. Because why not...
 
 also:
 * no use of the internet to lookup anything\* (including code docs)
-* no libraries (on a plane, with no internet access)
+* stdlib libraries only (on a plane, with no internet access)
 
 _* except to lookup some hard puzzles to independantly test my program_
 
